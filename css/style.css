@@ -1,0 +1,421 @@
+/* =====================================================================
+   style.css — كل شكل الـ dashboard: الألوان، المسافات، الخطوط، والموبايل
+   ---------------------------------------------------------------------
+   الفكرة: CSS بيقول "العنصر اللي اسمه كذا شكله كذا".
+   مثلاً  .card{...}  معناها: أي عنصر عليه class="card" ياخد الشكل ده.
+   ===================================================================== */
+
+/* ---------- 1) الألوان (CSS Variables) ----------
+   :root هو أعلى عنصر في الصفحة، وأي متغير بنعرّفه هنا بيبقى متاح في كل حتة.
+   بنكتب اللون مرة واحدة هنا، وفي باقي الملف بنقول var(--lime) بدل ما نكرر الكود.
+   لو عايز تغيّر لون الخلفية مثلاً، غيّر --bg بس وكل الصفحة هتتغير. */
+:root{
+  --bg:#E9E9E7; --surface:#FFFFFF; --surface2:#F3F3F1; --border:#DADAD6;
+  --text:#000000; --muted:#5F5E5A; --lime:#B6FF00; --lime40:#D3F59A;
+  --lime-soft:rgba(182,255,0,.30); --on-lime:#000000; --accent-text:#466400;
+  --danger:#C7362A; --danger-soft:rgba(199,54,42,.12); --warn:#9A6A00; --warn-soft:rgba(255,196,71,.22);
+  --info:#2D64B5; --info-soft:rgba(45,100,181,.12); --skel:#DEDEDB;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+/* ---------- 2) الوضع الغامق ----------
+   لما زرار القمر يتداس، الـ JavaScript بيحط data-theme="dark" على الصفحة،
+   فالقيم دي بتاخد مكان القيم اللي فوق. */
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#0D0D0D; --surface2:#161616; --border:#232323; --text:#FEF9F5; --muted:#A3A09A;
+  --lime-soft:rgba(182,255,0,.12); --accent-text:#B6FF00; --skel:#1A1A1A; color-scheme:dark;
+  --danger:#FF6B5E; --danger-soft:rgba(255,107,94,.14); --warn:#FFC447; --warn-soft:rgba(255,196,71,.14);
+  --info:#7FB7FF; --info-soft:rgba(127,183,255,.14); }
+/* sidebar always black, per palette */
+/* الـ sidebar دايماً أسود: بنعيد تعريف المتغيرات جواه بس، فكل اللي جواه يبقى غامق */
+.side{--surface:#000000; --surface2:#1A1A1A; --border:#262626; --text:#FEF9F5; --muted:#9C9A95;
+  --lime-soft:rgba(182,255,0,.14); --accent-text:#B6FF00; color:var(--text); color-scheme:dark}
+/* ---------- 3) إعدادات عامة لكل الصفحة ---------- */
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:'Readex Pro',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+/* .ms = الأيقونات. بنكتب اسم الأيقونة كنص (مثلاً "search") والخط بيحوّلها لرسمة */
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';vertical-align:middle;user-select:none}
+/* الأسهم: في العربي لازم تتعكس، فأي أيقونة عليها class="flip" بتتقلب لما الصفحة تبقى rtl */
+[dir="rtl"] .flip{transform:scaleX(-1)}
+img{max-width:100%}
+
+
+/* ---------- 4) تقسيم الصفحة (Layout) ----------
+   .app متقسمة عمودين: الأول 268px للـ sidebar، والتاني (1fr) ياخد باقي العرض.
+   في العربي الـ grid بيقلب لوحده، فالـ sidebar يروح يمين من غير ما نعمل حاجة. */
+.app{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;background:var(--surface);border-inline-end:1px solid var(--border);display:flex;flex-direction:column;padding:20px 14px;overflow-y:auto;z-index:40}
+/* اللوجو واسم التطبيق فوق في الـ sidebar */
+.brand{display:flex;align-items:center;gap:12px;padding:6px 6px 22px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+.brand-mark{width:52px;height:52px;border-radius:14px;background:var(--lime);color:var(--on-lime);display:grid;place-items:center;flex:none}
+.brand-mark .ms{font-size:30px}
+.brand-name{font-weight:700;font-size:20px;line-height:1.15;letter-spacing:-.01em}
+.brand-sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.nav-group{font-size:12px;color:var(--muted);padding:14px 10px 6px}
+/* لينكات القايمة. .active = الصفحة المفتوحة دلوقتي (خلفيتها خضرا) */
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:var(--text);text-decoration:none;font-size:14px;margin-bottom:2px}
+.nav a:hover{background:var(--surface2)}
+.nav a.active{background:var(--lime);color:var(--on-lime);font-weight:600}
+.nav a .ms{font-size:21px}
+.nav .badge{margin-inline-start:auto;font-size:11px;background:var(--surface2);color:var(--muted);padding:2px 8px;border-radius:20px}
+.nav a.active .badge{background:rgba(0,0,0,.18);color:var(--on-lime)}
+.nav .new{margin-inline-start:auto;font-size:11px;background:var(--lime-soft);color:var(--accent-text);padding:2px 8px;border-radius:20px}
+.side-foot{margin-top:auto;padding-top:16px}
+.cap{background:var(--surface2);border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px}
+.cap-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.bar{height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--lime);border-radius:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);display:inline-block}
+.side-links{display:flex;gap:6px}
+.side-links button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:1px solid var(--border);border-radius:10px;padding:8px;font-size:13px;color:var(--muted)}
+
+/* ---------- 5) الشريط اللي فوق (Topbar) ----------
+   position:sticky معناها إنه يفضل ثابت فوق وانت بتعمل scroll */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:12px 28px}
+.menu-btn{display:none}
+.search{flex:1;max-width:420px;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px 12px;color:var(--muted)}
+.search input{flex:1;background:none;border:0;outline:none;min-width:0}
+.top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:12px;background:var(--surface);border:1px solid var(--border);display:grid;place-items:center;position:relative}
+.icon-btn .pip{position:absolute;top:8px;inset-inline-end:9px;width:8px;height:8px;border-radius:50%;background:var(--lime);border:2px solid var(--surface)}
+.lang-btn{height:40px;border-radius:12px;background:var(--lime);color:var(--on-lime);border:0;padding:0 14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.user{display:flex;align-items:center;gap:10px;padding-inline-start:8px}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--lime40);color:#000;display:grid;place-items:center;font-weight:700;font-size:14px;flex:none}
+.avatar.sm{width:34px;height:34px;font-size:12px}
+.user-name{font-weight:600;font-size:14px;line-height:1.2}
+.user-role{font-size:12px;color:var(--muted)}
+
+/* ---------- 6) محتوى الصفحة والعناوين والزراير ---------- */
+.content{padding:24px 28px 48px;max-width:1440px;width:100%}
+.crumbs{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted);margin-bottom:8px}
+.crumbs .ms{font-size:18px}
+.page-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px}
+h1{font-size:28px;line-height:1.25;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0;max-width:62ch}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+/* .btn = شكل الزرار العادي. .btn.primary = الزرار الأخضر المهم */
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:500;border:1px solid var(--border);background:var(--surface);white-space:nowrap}
+.btn .ms{font-size:20px}
+.btn.primary{background:var(--lime);color:var(--on-lime);border-color:var(--lime);font-weight:600}
+.btn.ghost{background:none}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+
+/* ---------- 7) الشبكات والكروت ----------
+   .g4 = 4 أعمدة جنب بعض، .g3 = 3، .g2 = 2، .g-main = عمود كبير وعمود صغير */
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-main{grid-template-columns:minmax(0,2fr) minmax(0,1fr)}
+.mb{margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.card h2,.card h3{margin:0;font-size:17px;font-weight:600;line-height:1.35}
+.card .sub{color:var(--muted);font-size:13px;margin-top:2px}
+
+/* ---------- 8) كروت الأرقام (KPI) ----------
+   .kpi.hero = الكارت المميز الأخضر (أول كارت في كل صفحة) */
+.kpi{display:flex;flex-direction:column;gap:6px}
+.kpi-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+.kpi-ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--surface2);color:var(--text)}
+.kpi-val{font-size:30px;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.kpi-val small{font-size:14px;font-weight:500;color:var(--muted);margin-inline-start:4px}
+.kpi-foot{font-size:12.5px;color:var(--muted)}
+.trend{display:inline-flex;align-items:center;gap:2px;font-size:12.5px;font-weight:600;color:var(--accent-text)}
+.trend.down{color:var(--danger)}
+.trend .ms{font-size:16px}
+.kpi.hero{background:var(--lime);border-color:var(--lime);color:var(--on-lime)}
+.kpi.hero .kpi-top,.kpi.hero .kpi-foot,.kpi.hero .kpi-val small{color:rgba(0,0,0,.66)}
+.kpi.hero .kpi-ico{background:rgba(0,0,0,.12);color:#000}
+.kpi.hero .trend{color:#000}
+
+/* ---------- 9) شريط توصية الذكاء الاصطناعي ---------- */
+.ai{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-inline-start:4px solid var(--lime);border-radius:18px;padding:18px 20px}
+.ai-ico{width:44px;height:44px;border-radius:12px;background:var(--lime-soft);color:var(--accent-text);display:grid;place-items:center;flex:none}
+.ai-body{flex:1;min-width:0}
+.ai-title{font-weight:600;margin-bottom:2px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ai p{margin:4px 0 12px;color:var(--muted);font-size:14px}
+.ai p b{color:var(--text)}
+
+/* ---------- 10) الـ chips (الحالة الملونة الصغيرة) ----------
+   ok = أخضر، warn = أصفر، bad = أحمر، info = أزرق */
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap;background:var(--surface2);color:var(--muted)}
+.chip.ok{background:var(--lime-soft);color:var(--accent-text)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--danger-soft);color:var(--danger)}
+.chip.info{background:var(--info-soft);color:var(--info)}
+
+/* ---------- 11) الـ tabs وشريط البحث والفلاتر ---------- */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--border);background:none;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.tab b{font-weight:600;color:var(--text)}
+.tab.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.tab.on b{color:var(--bg)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.field{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:7px 10px;color:var(--muted)}
+.field input,.field select{background:none;border:0;outline:none;min-width:0}
+.field select option{background:var(--surface);color:var(--text)}
+.field .ms{font-size:19px}
+
+/* ---------- 12) الجداول ----------
+   .table-wrap بيخلّي الجدول يعمل scroll لوحده على الموبايل بدل ما يكسر الصفحة */
+.table-wrap{overflow-x:auto;margin:0 -20px;padding:0 20px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+th{text-align:start;font-weight:500;color:var(--muted);font-size:12.5px;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--surface2)}
+.person{display:flex;align-items:center;gap:10px}
+.person b{display:block;font-weight:600;font-size:14px}
+.person span{font-size:12px;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+/* شريط نسبة الالتزام: lo = أحمر (أقل من 50%)، mid = أصفر (أقل من 75%) */
+.adh{display:flex;align-items:center;gap:8px;min-width:110px}
+.adh .bar{flex:1}
+.adh.lo .bar>i{background:var(--danger)}
+.adh.mid .bar>i{background:var(--warn)}
+/* أرقام الصفحات تحت الجدول (Pagination) */
+.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--muted)}
+.pages{display:flex;gap:4px}
+.pages button{min-width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:none;display:grid;place-items:center}
+.pages button.on{background:var(--lime);color:var(--on-lime);border-color:var(--lime);font-weight:700}
+.pages button:disabled{opacity:.35;cursor:default}
+
+/* ---------- 13) الـ charts ----------
+   .chart-box بيحدد ارتفاع الـ chart، وChart.js بيملا العرض لوحده */
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:6px;vertical-align:middle}
+.chart-box{position:relative;height:280px}
+.chart-box.sm{height:210px}
+.goal-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.goal-row{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.goal-row b{margin-inline-start:auto}
+.stat-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stat-pair div{background:var(--surface2);border-radius:12px;padding:10px 12px}
+.stat-pair b{display:block;font-size:20px}
+.stat-pair span{font-size:12px;color:var(--muted)}
+
+/* ---------- 14) كروت البرامج والأنظمة الغذائية والمدربين ---------- */
+.pcard{display:flex;flex-direction:column;gap:12px}
+.pcard-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pcard h3{font-size:16px}
+.pcard p{margin:0;color:var(--muted);font-size:13.5px}
+.meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}
+.meta span{display:inline-flex;align-items:center;gap:4px}
+.meta .ms{font-size:17px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.pcard-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:12px;margin-top:auto}
+.macro-bar{display:flex;height:8px;border-radius:6px;overflow:hidden;gap:2px}
+.macro-bar i{display:block;height:100%}
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini-stats div{background:var(--surface2);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--muted)}
+.mini-stats b{display:block;font-size:16px;color:var(--text)}
+
+/* ---------- 15) حالات Empty و Error (مطلوبة في الـ ticket) ---------- */
+.empty,.error{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .ms,.error .ms{font-size:40px;display:block;margin:0 auto 10px}
+.error .ms{color:var(--danger)}
+.empty b,.error b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
+.empty p,.error p{margin:0 0 14px;font-size:14px}
+
+/* ---------- 16) حالة Loading (Skeleton) ----------
+   مستطيلات رمادي عليها لمعة بتتحرك، بتبان لحد ما الصفحة تحمّل */
+.skel{background:var(--skel);border-radius:10px;position:relative;overflow:hidden}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);animation:sh 1.2s infinite}
+@keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@media (prefers-reduced-motion: reduce){.skel::after{animation:none}}
+
+/* صفحة "قيد التطوير" (الإعدادات) */
+.wip{text-align:center;padding:80px 20px}
+.wip .ms{font-size:56px;color:var(--accent-text)}
+
+/* ---------- 17) حاسبة السعرات ---------- */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+.form-grid input,.form-grid select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;outline:none}
+.form-grid input:focus,.form-grid select:focus{border-color:var(--lime)}
+.form-grid .full{grid-column:1/-1}
+.seg{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:3px}
+.seg button{flex:1;border:0;background:none;padding:7px;border-radius:8px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--lime);color:var(--on-lime);font-weight:600}
+.big-num{font-size:48px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.res-grid div{background:var(--surface2);border-radius:12px;padding:12px}
+.res-grid b{display:block;font-size:20px}
+.res-grid span{font-size:12px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);margin-top:14px;display:flex;gap:6px}
+.note .ms{font-size:18px}
+
+/* ---------- 18) الوصفات ونافذة عرض الوصفة (Modal) ---------- */
+.rcard{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.r-hero{height:150px;display:grid;place-items:center;font-size:64px;background:var(--surface2);position:relative}
+.r-hero{height:190px}.r-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.modal-img{display:block;width:100%;height:220px;object-fit:cover;border-radius:14px;margin-bottom:14px}
+.r-hero .chip{z-index:1;position:absolute;top:12px;inset-inline-start:12px;background:var(--bg);color:var(--text)}
+.r-body{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}
+.macros4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.macros4 div{background:var(--surface2);border-radius:10px;padding:8px 4px;font-size:11.5px;color:var(--muted)}
+.macros4 b{display:block;font-size:15px;color:var(--text)}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:60;display:grid;place-items:center;padding:20px}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:640px;width:100%;max-height:calc(100% - 40px);overflow-y:auto;padding:24px}
+.modal h2{margin:0;font-size:22px}
+.modal h4{margin:20px 0 8px;font-size:15px}
+.modal ul,.modal ol{margin:0;padding-inline-start:20px;color:var(--muted)}
+.modal li{margin-bottom:6px}
+
+/* ---------- 19) الموبايل والتابلت (Responsive) ----------
+   @media (max-width:1024px) معناها: القواعد اللي جوه تشتغل بس لو الشاشة أصغر من 1024px.
+   على التابلت: الـ sidebar يستخبى ويطلع من الجنب لما تدوس ☰.
+   على الموبايل: الكروت تبقى تحت بعض عمود واحد. */
+.overlay{display:none}
+@media (max-width:1180px){ .g4{grid-template-columns:repeat(2,minmax(0,1fr))} .g3{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:1024px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;top:0;bottom:0;inset-inline-start:0;width:280px;height:100%;padding-top:calc(20px + env(safe-area-inset-top,0px));transform:translateX(-105%);transition:transform .25s}
+  [dir="rtl"] .side{transform:translateX(105%)}
+  body.nav-open .side{transform:none}
+  body.nav-open .overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:35}
+  .menu-btn{display:grid}
+  .g-main,.g2{grid-template-columns:1fr}
+  .top{padding:10px 16px}.content{padding:20px 16px 40px}
+  .user-txt{display:none}
+}
+@media (max-width:640px){
+  .g4,.g3{grid-template-columns:1fr}
+  .search{display:none}
+  h1{font-size:23px}
+  .form-grid,.res-grid{grid-template-columns:1fr 1fr}
+  .kpi-val{font-size:26px}
+  .ai{flex-direction:column}
+}
+
+/* ---------- 20) الفلاتر والبحث المتقدم (listView) ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.filters .field.grow{flex:1 1 260px}
+.field.sel{padding-block:5px}
+.field.sel select{max-width:230px;cursor:pointer;padding:2px 0}
+.adv-btn.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:20px;background:var(--lime);color:#000;font-size:11px;font-weight:700}
+.icon-btn.clr:disabled{opacity:.35;cursor:default}
+.adv-panel{background:var(--surface2);border:1px dashed var(--border);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.adv-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-bottom:10px}
+.adv-title .ms{font-size:19px;color:var(--accent-text)}
+.adv-grid{display:flex;flex-wrap:wrap;gap:10px}
+.adv-grid .field{background:var(--surface)}
+.pager-card{padding:10px 20px}
+.pager-card .pager{margin-top:0}
+.seg.vt{width:auto}
+.seg.vt button{padding:6px 10px}
+
+/* ---------- 21) الرقم التعريفي وأزرار الإجراءات ---------- */
+.idc{display:inline-block;direction:ltr;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:var(--surface2);color:var(--muted);padding:3px 8px;border-radius:8px;white-space:nowrap}
+.idc.on-dark{background:rgba(0,0,0,.6);color:#fff}
+.row-actions{display:flex;gap:2px;justify-content:flex-start}
+.ia{width:32px;height:32px;border:0;background:none;border-radius:8px;color:var(--muted);display:grid;place-items:center}
+.ia:hover{background:var(--surface2);color:var(--text)}
+.ia .ms{font-size:20px}
+
+/* ---------- 22) كروت البرامج بصورة (زي الصورة 8) ---------- */
+.pcard2{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.p-hero{position:relative;height:170px;background:#0c0c0c;color:#fff;overflow:hidden}
+.p-hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(182,255,0,.07) 0 2px,transparent 2px 18px)}
+.p-hero::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(182,255,0,.35),transparent 65%);top:-60px;inset-inline-end:-40px}
+.p-hero.cat-cut::before{background:repeating-linear-gradient(45deg,rgba(182,255,0,.07) 0 2px,transparent 2px 16px)}
+.p-hero.cat-rehab::before{background:radial-gradient(rgba(182,255,0,.12) 1.5px,transparent 1.5px) 0 0/16px 16px}
+.p-hero.cat-str::before{background:repeating-linear-gradient(0deg,rgba(182,255,0,.07) 0 2px,transparent 2px 18px)}
+.hero-ic{position:absolute;inset-inline-end:28px;top:40px;font-size:84px;color:var(--lime);z-index:1;opacity:.95}
+.hero-chip{position:absolute;top:12px;inset-inline-start:12px;z-index:2;background:var(--lime)!important;color:#000!important;font-weight:600}
+.p-hero .idc{position:absolute;top:12px;inset-inline-end:12px;z-index:2}
+.hero-foot{position:absolute;bottom:12px;inset-inline:12px;display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;z-index:2}
+.chip.dark{background:rgba(0,0,0,.65);color:#fff}
+.chip.dark .ms,.chip .ms{font-size:15px}
+.r-hero .r-id{position:absolute;top:12px;inset-inline-end:12px;z-index:1}
+
+/* ---------- 23) كروت الكادر (زي الصورة 10) ---------- */
+.scard{display:flex;flex-direction:column;gap:12px}
+.s-person{display:flex;gap:12px;align-items:center}
+.s-person h3{font-size:16px}
+.avatar.lg{width:56px;height:56px;font-size:17px;position:relative;border-radius:16px}
+.avatar.gym{background:var(--surface2);color:var(--text)}
+.vb{position:absolute;bottom:-4px;inset-inline-end:-4px;font-size:18px!important;color:#000;background:var(--lime);border-radius:50%;border:2px solid var(--surface)}
+.s-title{color:var(--accent-text);font-size:13px;font-weight:600;margin-top:2px}
+.s-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--surface2);border-radius:12px;padding:10px}
+.s-stats span{display:block;font-size:11.5px;color:var(--muted)}
+.s-stats b{font-size:14px}
+.metric .mrow{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.metric .mrow b{color:var(--text)}
+.bar.alt>i{background:var(--text)}
+.btn.grow{flex:1;justify-content:center}
+.dot-s{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.lnk{color:var(--accent-text);font-weight:600;text-decoration:none}
+
+/* ---------- 24) تفاصيل داخل الـ modal ---------- */
+.modal.wide{max-width:820px}
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.dl div{background:var(--surface2);border-radius:10px;padding:10px 12px}
+.dl span{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+.dl b{font-size:14px;font-weight:600}
+.mini-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.mini-row .ms{font-size:18px;vertical-align:-4px}
+
+/* ---------- 25) القايمة الجانبية: صفحات فرعية وعدّادات ---------- */
+.nav-parent{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border-radius:10px;border:0;background:none;color:var(--text);font:inherit;font-size:14px;margin-bottom:2px;text-align:start}
+.nav-parent:hover{background:var(--surface2)}
+.nav-parent.inside{color:var(--accent-text);font-weight:600}
+.nav-parent .chev{margin-inline-start:auto;font-size:20px;transition:transform .2s}
+.nav-parent[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.nav-sub{margin:0 0 6px;margin-inline-start:22px;padding-inline-start:10px;border-inline-start:1px solid var(--border)}
+.nav a.sub{padding:8px 12px;font-size:13.5px}
+.sub-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);margin-inline:7px}
+.nav a.active .sub-dot{background:#000}
+.badge.alert{background:var(--lime)!important;color:#000!important;font-weight:700}
+
+/* ---------- 26) طلبات التسجيل ---------- */
+.pipe{display:flex;justify-content:space-between;align-items:center;text-align:start;width:100%;font:inherit;color:inherit;cursor:pointer}
+.pipe.sel{outline:2px solid var(--lime);outline-offset:-2px}
+.pipe-ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center}
+.pipe-ic.warn{background:var(--warn-soft);color:var(--warn)}
+.pipe-ic.ok{background:var(--lime-soft);color:var(--accent-text)}
+.pipe-ic.bad{background:var(--danger-soft);color:var(--danger)}
+
+/* ---------- 27) المحادثات والتذاكر ---------- */
+.thread{display:flex;flex-direction:column;gap:10px;padding:8px 0}
+.bubble{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.5}
+.bubble.in{align-self:flex-start;background:var(--surface2);border-end-start-radius:4px}
+.bubble.out{align-self:flex-end;background:var(--lime);color:#000;border-end-end-radius:4px}
+.bubble span{display:block;font-size:11px;opacity:.65;margin-top:4px}
+.reply textarea{width:100%;margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;resize:vertical;font:inherit;color:inherit;outline:none}
+.reply textarea:focus{border-color:var(--lime)}
+.chat-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:16px;align-items:start}
+.chat-list{grid-template-columns:1fr;gap:8px}
+.chat-item{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:start;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px;position:relative;cursor:pointer;font:inherit;color:inherit}
+.chat-item:hover{border-color:var(--muted)}
+.chat-item.on{border-color:var(--lime);border-inline-start:4px solid var(--lime)}
+.ci-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ci-top{display:flex;justify-content:space-between;gap:8px}
+.ci-body .ms{font-size:15px;vertical-align:-3px}
+.ci-last{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-flag{position:absolute;bottom:12px;inset-inline-end:12px;width:9px;height:9px;border-radius:50%}
+.ci-flag.bad{background:var(--danger)}.ci-flag.warn{background:var(--warn)}
+.chat-pane{position:sticky;top:84px}
+.chat-pane .person b{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.chat-pane .person .ms{font-size:18px;color:var(--muted)}
+.warn-note{background:var(--warn-soft);color:var(--text);padding:10px 12px;border-radius:12px;margin:0 0 10px;align-items:center}
+.chat-actions{margin-top:14px;border-top:1px solid var(--border);padding-top:14px}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:14px;z-index:80;transition:.25s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast .ms{color:var(--lime)}
+@media (max-width:1024px){.chat-layout{grid-template-columns:1fr}.chat-pane{position:static}}
+@media (max-width:640px){.filters .field,.field.sel select{flex:1 1 100%;max-width:none}.dl{grid-template-columns:1fr}.s-stats{grid-template-columns:1fr 1fr 1fr}}
+
+/* صورة البرنامج: طبقة غامقة عشان الكلام اللي فوقها يبان */
+.p-hero.has-img::before{background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,0) 55%,rgba(0,0,0,.7) 100%);z-index:1}
+.p-hero.has-img::after{display:none}
+.p-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
